@@ -19,19 +19,27 @@ def get_masked_cards(db, user_role="support_agent"):
                 "card_number": {
                     "$concat": [
                         "************",
-                        {"$substr": ["$card_number", 12, 4]}
+                        {"$substrCP": ["$card_number", 12, 4]}
                     ]
                 },
 
-                # Fraud analysts see the CVV. Support agents don't:
-                "cvv": (
-                    "$cvv" if user_role == "fraud_analyst" else "REDACTED"
-                ),
+                # CVV only visible for fraud analysts
+                "cvv": {
+                    "$cond": {
+                        "if": {"$eq": ["$$role", "fraud_analyst"]},
+                        "then": "$cvv",
+                        "else": "REDACTED"
+                    }
+                },
 
-                # Fraud analysts see the expiry date. Support agents don't:
-                "expiry_date": (
-                    "$expiry_date" if user_role == "fraud_analyst" else "REDACTED"
-                ),
+                # Expiry date only visible for fraud analysts
+                "expiry_date": {
+                    "$cond": {
+                        "if": {"$eq": ["$$role", "fraud_analyst"]},
+                        "then": "$expiry_date",
+                        "else": "REDACTED"
+                    }
+                },
 
                 # Fully redact the billing address for all roles:
                 "billing_address": "REDACTED"
@@ -39,7 +47,8 @@ def get_masked_cards(db, user_role="support_agent"):
         }
     ]
 
-    return list(db["cards"].aggregate(pipeline))
+    # Pass user_role into the pipeline using `let`
+    return list(db["cards"].aggregate(pipeline, let={"role": user_role}))
 
 # Support agents receive masked data for CVV and expiry date:
 support_results = get_masked_cards(db, user_role="support_agent")

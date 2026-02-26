@@ -34,7 +34,6 @@ source_coll.insert_many([
 def mask_document(doc):
     # Replace every sensitive field with a Faker-generated value:
     return {
-        "_id": doc["_id"],
         "cardholder_name": fake.name(),
 
         # Generate a random 16-digit card number:
@@ -68,5 +67,6 @@ def run_static_masking():
 
 run_static_masking()
 
+# Retrieve one sample document from the target collection to confirm masking:
 sample = target_coll.find_one({}, {"_id": 0})
 print(sample)

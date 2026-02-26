@@ -16,7 +16,7 @@ Each technique has its own Python file. Before you run any file, replace the `<U
 Run the following command to clone the repository to your machine:
 
 ```bash
-git clone https://github.com/<your-username>/masking-data-in-mongodb.git
+git clone https://github.com/<your-username>/mongodb-masking.git
 ```
 
 ## Set up your environment

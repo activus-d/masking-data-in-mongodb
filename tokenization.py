@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pymongo import MongoClient
 
 # Replace the placeholder values with your Atlas credentials and cluster hostname:
@@ -28,7 +28,7 @@ def tokenize(sensitive_value):
     vault_coll.insert_one({
         "token": token,
         "original_value": sensitive_value,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     })
 
     return token

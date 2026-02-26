@@ -41,7 +41,7 @@ db.command({
                 "card_number": {
                     "$concat": [
                         "************",
-                        {"$substr": ["$card_number", 12, 4]}
+                        {"$substrCP": ["$card_number", 12, 4]}
                     ]
                 },
 
